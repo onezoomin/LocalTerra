@@ -48,6 +48,29 @@ var localterraAddrs = []string{
 	"terra1fmcjjt6yc9wqup2r06urnrd928jhrde6gcld6n",
 }
 
+var initialBalance = types.Coins{
+	{
+		Denom:  "ueur",
+		Amount: "10000000000000000",
+	},
+	{
+		Denom:  "ukrw",
+		Amount: "1000000000000000000",
+	},
+	{
+		Denom:  "uluna",
+		Amount: "1000000000000000",
+	},
+	{
+		Denom:  "usdr",
+		Amount: "10000000000000000",
+	},
+	{
+		Denom:  "uusd",
+		Amount: "10000000000000000",
+	},
+}
+
 // migrateIntoLocalterraCmd represents the migrateIntoLocalterra command
 var migrateIntoLocalterraCmd = &cobra.Command{
 	Use:   "migrate-into-localterra [voting-power]",
@@ -124,9 +147,18 @@ $ LocalTerra append-account-set 1000000`,
 				balance["coins"] = coins
 			}
 
+			for i, addr := range localterraAddrs {
+				if addr == balance["address"] {
+					balance["coins"] = initialBalance.Add(types.MustParseToCoins(balance["coins"].([]interface{})))
+
+					localterraAddrs[i] = localterraAddrs[len(localterraAddrs)-1]
+					localterraAddrs = localterraAddrs[:len(localterraAddrs)-1]
+					break
+				}
+			}
+
 			newBalances = append(newBalances, balance)
 		}
-		bankState["balances"] = newBalances
 
 		numAccount := len(accounts)
 		for i, addr := range localterraAddrs {
@@ -138,38 +170,17 @@ $ LocalTerra append-account-set 1000000`,
 				Sequence:      "0",
 			})
 
-			balances = append(balances, types.Balance{
+			newBalances = append(newBalances, types.Balance{
 				Address: addr,
-				Coins: []types.Coin{
-					{
-						Denom:  "ueur",
-						Amount: "10000000000000000",
-					},
-					{
-						Denom:  "ukrw",
-						Amount: "1000000000000000000",
-					},
-					{
-						Denom:  "uluna",
-						Amount: "1000000000000000",
-					},
-					{
-						Denom:  "usdr",
-						Amount: "10000000000000000",
-					},
-					{
-						Denom:  "uusd",
-						Amount: "10000000000000000",
-					},
-				},
+				Coins:   initialBalance,
 			})
 		}
 
 		authState["accounts"] = accounts
-		bankState["balances"] = balances
+		bankState["balances"] = newBalances
 
 		supplyState := bankState["supply"].([]interface{})
-		incrementSupply := []types.Coin{
+		incrementSupply := types.Coins{
 			{
 				Denom:  "uluna",
 				Amount: strconv.FormatUint(uint64(11000000000000000)+votingPower*1000000, 10),
@@ -192,42 +203,7 @@ $ LocalTerra append-account-set 1000000`,
 			},
 		}
 
-		var newSupply []types.Coin
-		for _, coin := range incrementSupply {
-			for i, prevSupply := range supplyState {
-				prevSupply := prevSupply.(map[string]interface{})
-				if coin.Denom == prevSupply["denom"] {
-					b1, err := strconv.ParseUint(prevSupply["amount"].(string), 10, 64)
-					if err != nil {
-						return err
-					}
-
-					b2, err := strconv.ParseUint(coin.Amount, 10, 64)
-					if err != nil {
-						return err
-					}
-
-					coin.Amount = strconv.FormatUint(b1+b2, 10)
-
-					// remove appended items
-					supplyState[i] = supplyState[len(supplyState)-1]
-					supplyState = supplyState[:len(supplyState)-1]
-					break
-				}
-			}
-
-			newSupply = append(newSupply, coin)
-		}
-
-		for _, prevSupply := range supplyState {
-			prevSupply := prevSupply.(map[string]interface{})
-			newSupply = append(newSupply, types.Coin{
-				Denom:  prevSupply["denom"].(string),
-				Amount: prevSupply["amount"].(string),
-			})
-		}
-
-		bankState["supply"] = newSupply
+		bankState["supply"] = incrementSupply.Add(types.MustParseToCoins(supplyState))
 
 		// append validator
 		validators := genesis["validators"].([]interface{})

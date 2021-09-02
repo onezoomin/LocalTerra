@@ -1,5 +1,11 @@
 package types
 
+import (
+	"encoding/json"
+	"sort"
+	"strconv"
+)
+
 type Account struct {
 	Type          string      `json:"@type"`
 	Address       string      `json:"address"`
@@ -143,4 +149,91 @@ type ValidatorHistoricalReward struct {
 type HistoricalRewardInfo struct {
 	CumulativeRewardRatio []interface{} `json:"cumulative_reward_ratio"`
 	ReferenceCount        int           `json:"reference_count"`
+}
+
+type Coins []Coin
+
+func (a Coins) Add(b Coins) Coins {
+	var r Coins
+	for _, x := range a {
+		found := false
+		for i, y := range b {
+			if x.Denom == y.Denom {
+				amount1, _ := strconv.ParseUint(x.Amount, 10, 64)
+				amount2, _ := strconv.ParseUint(y.Amount, 10, 64)
+
+				r = append(r, Coin{
+					Denom:  x.Denom,
+					Amount: strconv.FormatUint(amount1+amount2, 10),
+				})
+
+				b[i] = b[len(b)-1]
+				b = b[:len(b)-1]
+
+				found = true
+
+				break
+			}
+		}
+
+		if !found {
+			r = append(r, x)
+		}
+	}
+
+	for _, y := range b {
+		r = append(r, y)
+	}
+
+	return r.Sort()
+}
+
+//-----------------------------------------------------------------------------
+// Sort interface
+
+// Len implements sort.Interface for Coins
+func (coins Coins) Len() int { return len(coins) }
+
+// Less implements sort.Interface for Coins
+func (coins Coins) Less(i, j int) bool { return coins[i].Denom < coins[j].Denom }
+
+// Swap implements sort.Interface for Coins
+func (coins Coins) Swap(i, j int) { coins[i], coins[j] = coins[j], coins[i] }
+
+var _ sort.Interface = Coins{}
+
+// Sort is a helper function to sort the set of coins in-place
+func (coins Coins) Sort() Coins {
+	sort.Sort(coins)
+	return coins
+}
+
+func ParseToCoins(coinsI []interface{}) (Coins, error) {
+	bz, err := json.Marshal(coinsI)
+	if err != nil {
+		return nil, err
+	}
+
+	var coins Coins
+	err = json.Unmarshal(bz, &coins)
+	if err != nil {
+		return nil, err
+	}
+
+	return coins, nil
+}
+
+func MustParseToCoins(coinsI []interface{}) Coins {
+	bz, err := json.Marshal(coinsI)
+	if err != nil {
+		panic(err)
+	}
+
+	var coins Coins
+	err = json.Unmarshal(bz, &coins)
+	if err != nil {
+		panic(err)
+	}
+
+	return coins
 }
