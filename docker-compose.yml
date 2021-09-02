@@ -9,11 +9,20 @@ services:
     networks:
       - terra
     ports:
+      - "26656:26656"
       - "26657:26657"
       - "1317:1317"
       - "9090:9090"
       - "9091:9091"
     command: terrad start
+  terrad_peer:
+    image: terramoney/localterra-core:bombay
+    pull_policy: always
+    volumes:
+      - ./config_peer:/root/.terra/config
+    networks:
+      - terra
+    command: terrad start --p2p.persistent_peers "62cd922a9d9349e790247dadd1e32947450502fb@terrad:26656"
   oracle:
     image: terramoney/pseudo-feeder:bombay
     pull_policy: always

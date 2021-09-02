@@ -59,3 +59,8 @@ node_modules/
 logs/
 config/addrbook.json
 config/write-file-atomic*
+config/genesis.json
+
+config_peer/addrbook.json
+config_peer/write-file-atomic*
+config_peer/genesis.json

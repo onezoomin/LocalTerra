@@ -35,6 +35,33 @@ $ git clone --depth 1 https://www.github.com/terra-money/LocalTerra
 $ cd LocalTerra
 ```
 
+Export columbus-4 or tequila state
+```sh
+# terrad@v0.4.6
+$ terrad export > exported_genesis.json
+
+# terrad@v0.5.x
+$ terrad migrate [path-to-genesis] --chain-id=[chain-id] --initial-height=[height] > new_genesis.json
+```
+
+Migrate additional state for localterra 
+```sh
+$ cd genesis-tool
+$ make install
+
+# Migrate state for localterra
+$ LocalTerra migrate-into-localterra [voting-power] --genesis=[path-to-genesis] --initial-height=[height] > migrated_genesis.json
+
+# Migrate wasm code
+$ LocalTerra migrate-code [code-id]=[path-to-wasm] [code-id]=[path-to-wasm] ... --genesis [path-to-genesis] > migrated_genesis.json
+```
+
+Move genesis into each config
+```sh
+$ cp ./migrated_genesis.json ./config/genesis.json 
+$ cp ./migrated_genesis.json ./config_peer/genesis.json
+```
+
 > Use v0.4.1 tag instead of main for columbus-4 and tequila network
 
 Make sure your Docker daemon is running in the background and `docker-compose` is installed. Then start LocalTerra:
