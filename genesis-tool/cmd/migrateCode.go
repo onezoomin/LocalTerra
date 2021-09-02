@@ -19,6 +19,7 @@ limitations under the License.
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -38,8 +39,14 @@ var migrateCodeCmd = &cobra.Command{
 
 $ LocalTerra migrate-code [codeID=path-to-wasm-file] [codeID=path-to-wasm-file]...`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		tempDir, err := ioutil.TempDir("/tmp", "wasm")
+		if err != nil {
+			return err
+		}
+
+		defer os.RemoveAll(tempDir)
 		wasmVM, err := wasmvm.NewVM(
-			"build",
+			tempDir,
 			"stargate,staking,terra",
 			32,
 			false,

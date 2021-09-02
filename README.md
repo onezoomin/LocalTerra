@@ -35,32 +35,9 @@ $ git clone --depth 1 https://www.github.com/terra-money/LocalTerra
 $ cd LocalTerra
 ```
 
-Export columbus-4 or tequila state
-```sh
-# terrad@v0.4.6
-$ terrad export > exported_genesis.json
+This branch contains customized bombay-10 genesis, which contains migrated terraswap contracts.
 
-# terrad@v0.5.x
-$ terrad migrate [path-to-genesis] --chain-id=[chain-id] --initial-height=[height] > new_genesis.json
-```
-
-Migrate additional state for localterra 
-```sh
-$ cd genesis-tool
-$ make install
-
-# Migrate state for localterra
-$ LocalTerra migrate-into-localterra [voting-power] --genesis=[path-to-genesis] --initial-height=[height] > migrated_genesis.json
-
-# Migrate wasm code
-$ LocalTerra migrate-code [code-id]=[path-to-wasm] [code-id]=[path-to-wasm] ... --genesis [path-to-genesis] > migrated_genesis.json
-```
-
-Move genesis into each config
-```sh
-$ cp ./migrated_genesis.json ./config/genesis.json 
-$ cp ./migrated_genesis.json ./config_peer/genesis.json
-```
+If you don't need more contract migration, you can just run LocalTerra without other steps.
 
 > Use v0.4.1 tag instead of main for columbus-4 and tequila network
 
@@ -87,6 +64,35 @@ To reset the world state, issue the following:
 
 ```sh
 $ docker-compose rm
+```
+
+## Customize exported genesis
+
+Export columbus-4 or tequila state
+```sh
+# terrad@v0.4.6
+$ terrad export > exported_genesis.json
+
+# terrad@v0.5.x
+$ terrad migrate [path-to-genesis] --chain-id=[chain-id] --initial-height=[height] > new_genesis.json
+```
+
+Migrate additional state for localterra 
+```sh
+$ cd genesis-tool
+$ make install
+
+# Migrate state for localterra
+$ LocalTerra migrate-into-localterra [voting-power] --genesis=[path-to-genesis] --initial-height=[height] > migrated_genesis.json
+
+# Migrate wasm code
+$ LocalTerra migrate-code [code-id]=[path-to-wasm] [code-id]=[path-to-wasm] ... --genesis [path-to-genesis] > migrated_genesis.json
+```
+
+Move genesis into each config
+```sh
+$ cp ./migrated_genesis.json ../config/genesis.json 
+$ cp ./migrated_genesis.json ../config_peer/genesis.json
 ```
 
 ## LocalTerra and...
