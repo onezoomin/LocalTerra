@@ -35,7 +35,7 @@ $ git clone --depth 1 https://www.github.com/terra-money/LocalTerra
 $ cd LocalTerra
 ```
 
-This branch initialized with customized bombay-10 genesis, which contains migrated terraswap & mirror contracts.
+This branch initialized with customized bombay-10 genesis, which contains migrated terraswap & mirror & anchor contracts.
 
 If you don't need more contract migration, you can just run LocalTerra without other steps.
 
