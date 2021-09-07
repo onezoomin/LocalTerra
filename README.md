@@ -86,6 +86,7 @@ $ make install
 $ LocalTerra migrate-into-localterra [voting-power] --genesis=[path-to-genesis] --initial-height=[height] > migrated_genesis.json
 
 # Migrate wasm code
+# Multiple execution allowed
 $ LocalTerra migrate-code [code-id]=[path-to-wasm] [code-id]=[path-to-wasm] ... --genesis [path-to-genesis] > migrated_genesis.json
 ```
 
