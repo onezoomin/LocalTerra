@@ -24,7 +24,7 @@ The advantages of LocalTerra over a public testnet are that:
 
 ## Requirements
 
-- [Docker](https://www.docker.com/) installed and configured on your system
+- [Docker](https://www.docker.com/) installed and configured on your system with minimum 4GB of memory resource
 - [`docker-compose`](https://github.com/docker/compose)
 - Supported known architecture: x86_64
 
@@ -35,8 +35,7 @@ $ git clone --depth 1 https://www.github.com/terra-money/LocalTerra
 $ cd LocalTerra
 ```
 
-This branch initialized with customized bombay-10 genesis, which contains migrated terraswap & mirror & anchor contracts.
-
+This branch initialized with customized bombay-10 genesis, which contains migrated TerraSwap & Anchor & Mirror contracts.
 If you don't need more contract migration, you can just run LocalTerra without other steps.
 
 > Use v0.4.1 tag instead of main for columbus-4 and tequila network
