@@ -280,6 +280,9 @@ $ LocalTerra append-account-set 1000000`,
 		})
 		stakingState["validators"] = stakingValidators
 
+		stakingParams := stakingState["params"].(map[string]interface{})
+		stakingParams["max_validators"] = uint32(stakingParams["max_validators"].(float64) + 1)
+
 		// register slashing infos
 		slashingState := appState["slashing"].(map[string]interface{})
 		missedBlocks := slashingState["missed_blocks"].([]interface{})
