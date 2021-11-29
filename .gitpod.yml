@@ -2,9 +2,10 @@ tasks:
   - name: Dev Server
     before: docker-compose pull
     init: docker-compose pull
-    command: docker-compose up -d
+    command: docker-compose up -d && docker-compose ps && gp sync-done dcup
 
   - name: e2e Tests
+    init: gp sync-await dcup
     command: |
       docker-compose ps
       docker-compose exec terrad sh -c 'terrad status' | jq .
