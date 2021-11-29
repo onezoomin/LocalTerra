@@ -1,0 +1,11 @@
+tasks:
+  - name: Dev Server
+    before: docker-compose pull
+    init: docker-compose pull
+    command: docker-compose up -d
+
+  - name: e2e Tests
+    command: |
+      docker-compose ps
+      docker-compose exec terrad sh -c 'terrad status' | jq .
+    openMode: split-right
