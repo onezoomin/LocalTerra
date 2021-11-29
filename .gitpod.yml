@@ -5,8 +5,8 @@ tasks:
     command: docker-compose up -d && docker-compose ps && gp sync-done dcup
 
   - name: e2e Tests
-    init: gp sync-await dcup
     command: |
+      gp sync-await dcup
       docker-compose ps
       docker-compose exec terrad sh -c 'terrad status' | jq .
     openMode: split-right
